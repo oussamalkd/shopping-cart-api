@@ -10,7 +10,7 @@ declare global {
 
   interface ISale {
     SaleID: number;
-    ProductId: number;
+    ProductID: number;
     Quantity: number;
     Date: Date;
     TotalAmount: number;

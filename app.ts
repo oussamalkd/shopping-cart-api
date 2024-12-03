@@ -2,6 +2,7 @@ require("dotenv").config();
 const http = require("http");
 
 const productController = require("./controllers/productsController");
+const salesController = require("./controllers/SalesController");
 
 //setup routing
 const server = http.createServer((req: any, res: any) => {
@@ -36,5 +37,7 @@ server.listen(port, (req: any, res: any) => {
   start();
   // insert data to product collection
   productController.fillCollection(req, res);
+  //
+  salesController.fillCollection();
   console.log(`Your app runing at http://localhost:${port}`);
 });
