@@ -1,12 +1,13 @@
 import { Schema, model } from "mongoose";
+import IProduct from "../utils/types";
 
-const ProductSchema = new Schema<Product>({
-  product_id: { type: Number, required: true, unique: true },
-  product_name: { type: String, required: true, trim: true },
-  category: { type: String, required: true, trim: true },
-  price: { type: Number, required: true },
+const ProductSchema = new Schema<IProduct>({
+  ProductID: { type: Number, required: true, unique: true },
+  ProductName: { type: String, required: true, trim: true },
+  Category: { type: String, required: true, trim: true },
+  Price: { type: Number, required: true },
 });
 
-const Product = model<Product>("Product", ProductSchema);
+const Product = model<IProduct>("Product", ProductSchema);
 
 module.exports = Product;
