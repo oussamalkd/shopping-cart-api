@@ -1,0 +1,21 @@
+{
+  "name": "shopping-cart-api",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app.ts"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.10.1",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.6",
+    "global": "^4.4.0",
+    "mongoose": "^8.8.3",
+    "ts-node": "^10.9.2"
+  }
+}
