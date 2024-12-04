@@ -1,18 +1,22 @@
 const Product = require("../models/Products");
 const Sale = require("../models/Sales")
 
+import { ServerResponse } from "http";
 import IProduct from "../utils/types";
 
 const { useImportData } = require("../utils/useImportData");
 
-const index = async (req: any, res: any): Promise<IProduct> => {
-  const products = await Sale.aggregate([
+// #GET api/products
+const index = async (req: any, res: ServerResponse): Promise<ServerResponse> => {
+  const products: Promise<IProduct> = await Sale.aggregate([
+    // group products by total sales
     {
       $group: {
         _id: "$ProductID",
         TotalSales: { $sum: '$Quantity'}
       }
     },
+    // get product details from Products collection
     {
       $lookup: {
         from: "products",
@@ -35,15 +39,16 @@ const index = async (req: any, res: any): Promise<IProduct> => {
         TotalSales: 1
       }
     },
-    // sort products with the most sale
+    // sort by best selling product
     {
       $sort: { TotalSales: -1}
     }
   ])
-  //const products = await Product.find({ProductID: 1}).populate("total_sales");
+
   return res.end(JSON.stringify({ sucess: true, products }));
 };
 
+// fill products collection
 const fillCollection = async () => {
   const count = await Product.find().countDocuments();
 
