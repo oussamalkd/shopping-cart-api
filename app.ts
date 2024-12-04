@@ -22,6 +22,10 @@ const server = http.createServer((req: any, res: ServerResponse) => {
   if(url === "/api/analytics/trending_products") {
     salesController.getTrandingProducts(req, res)
   }
+
+  if(url === "/api/analytics/category_sales") {
+    salesController.getSalesByCategory(req, res)
+  }
 });
 
 //connect databae

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import ISale from "../utils/types";
 
-const ProductSchema = new Schema<ISale>(
+const SalesSchema = new Schema<ISale>(
   {
     SaleID: { type: Number, required: true, unique: true },
     ProductID: { type: Number, required: true },
@@ -12,6 +12,8 @@ const ProductSchema = new Schema<ISale>(
   { timestamps: true }
 );
 
-const Sale = model<ISale>("Sale", ProductSchema);
+SalesSchema.index({ ProductID: 1})
+
+const Sale = model<ISale>("Sale", SalesSchema);
 
 module.exports = Sale;

@@ -1,5 +1,6 @@
 const Sale = require("../models/Sales");
 
+import { ServerResponse } from "http";
 import ISale from "../utils/types";
 
 const { useImportData } = require("../utils/useImportData");
@@ -13,7 +14,7 @@ const fillCollection = async (req: any, res: any) => {
 };
 
 // #GET api/analytics/trending_products
-const getTrandingProducts = async (req:any, res:any) => {
+const getTrandingProducts = async (req:any, res:ServerResponse) => {
   const products = await Sale.aggregate([
     // group products by total sales
     {
@@ -29,6 +30,7 @@ const getTrandingProducts = async (req:any, res:any) => {
         localField: "_id",
         foreignField: "ProductID",
         as: "Product"
+        
       }
     },
     // Deconstructs result from array to object
@@ -62,8 +64,53 @@ const getTrandingProducts = async (req:any, res:any) => {
     {
       $limit: 3
     }
-  ])
+  ]).explain('executionStats').then((result:any) => console.log(result))
+  .catch((err:any) => console.error(err));
   return res.end(JSON.stringify({secess: true, products}))
 }
 
-module.exports = { fillCollection, getTrandingProducts };
+
+// GET /analytics/category_sales
+const getSalesByCategory = async (req:any, res:ServerResponse) => {
+  const stats = await Sale.aggregate([
+    {
+      $lookup: {
+        from: "products",
+        localField: "ProductID",
+        foreignField: "ProductID",
+        as: "Product"
+      }
+    },
+    {
+      $unwind: "$Product"
+    },
+    {
+      $group: {
+        _id: "$Product.Category",
+        TotalCategorySales: { $sum: 1}
+
+      }
+    },
+    {
+      $lookup: {
+        from: "sales",
+        pipeline: [{
+          $count: "total"
+        }],
+        as: "TotalSales"
+      }
+    },
+    {
+      $unwind: "$TotalSales"
+    },
+    {
+      $addFields: {
+        percentage: { $multiply: [{$divide: ["$TotalCategorySales", "$TotalSales.total"]},100]}
+      }
+    }
+  ])
+
+  return res.end(JSON.stringify({secess: true, stats}))
+}
+
+module.exports = { fillCollection, getTrandingProducts, getSalesByCategory };

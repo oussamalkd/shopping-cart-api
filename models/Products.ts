@@ -6,9 +6,6 @@ const ProductSchema = new Schema<IProduct>({
   ProductName: { type: String, required: true, trim: true },
   Category: { type: String, required: true, trim: true },
   Price: { type: Number, required: true },
-}, { 
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
 });
 
 /* ProductSchema.virtual("total_sales", {
@@ -17,6 +14,8 @@ const ProductSchema = new Schema<IProduct>({
   foreignField: "ProductID",
   justOne: false
 }) */
+
+ProductSchema.index({ ProductID: 1, Category: 1 })
 
 const Product = model<IProduct>("Product", ProductSchema);
 
