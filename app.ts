@@ -13,7 +13,7 @@ const server = http.createServer((req: any, res: any) => {
     res.write("documentation route");
     res.end();
   }
-  if (url === "/products") {
+  if (url === "/api/products") {
     productController.index(req, res);
   }
 });
