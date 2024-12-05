@@ -9,10 +9,17 @@ const SalesSchema = new Schema<ISale>(
     Date: { type: Date, required: true },
     TotalAmount: { type: Number, required: true },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 SalesSchema.index({ ProductID: 1})
+
+/* SalesSchema.virtual("product", {
+  ref: "Product",
+  localField: "ProductID",
+  foreignField: "ProductID",
+  justOne: false
+}) */
 
 const Sale = model<ISale>("Sale", SalesSchema);
 

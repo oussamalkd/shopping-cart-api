@@ -13,6 +13,41 @@ const fillCollection = async (req: any, res: any) => {
   }
 };
 
+
+// #GET api/analytics/total_sales
+const getTotalSales = async (last_days: number = 0) => {
+
+  let filters: Record<string,unknown> = {}
+
+  if(last_days) {
+    const today = new Date()
+    const daysPeriod = new Date(today)
+    daysPeriod.setDate(today.getDate() - last_days )
+    filters.Date = { $gte: daysPeriod }
+  }
+  
+  const sales = await Sale.aggregate([
+    {
+      $match: filters
+    },
+    {
+      $group: {
+        _id: null,
+        totalSalesAmount: { $sum: "$TotalAmount" }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        totalSalesAmount: 1,
+      }
+    },
+  ])
+
+  return sales
+}
+
+
 // #GET api/analytics/trending_products
 const getTrandingProducts = async (req:any, res:ServerResponse) => {
   const products = await Sale.aggregate([
@@ -49,7 +84,7 @@ const getTrandingProducts = async (req:any, res:ServerResponse) => {
     // add total amount field
     {
       $addFields: {
-        TotalAmount: { $multiply: ['$Price', '$TotalSales']}
+        TotalSalesAmount: { $multiply: ['$Price', '$TotalSales']}
       }
     },
     // remove unused fields
@@ -64,15 +99,14 @@ const getTrandingProducts = async (req:any, res:ServerResponse) => {
     {
       $limit: 3
     }
-  ]).explain('executionStats').then((result:any) => console.log(result))
-  .catch((err:any) => console.error(err));
+  ])
   return res.end(JSON.stringify({secess: true, products}))
 }
 
 
 // GET /analytics/category_sales
 const getSalesByCategory = async (req:any, res:ServerResponse) => {
-  const stats = await Sale.aggregate([
+  const sales = await Sale.aggregate([
     {
       $lookup: {
         from: "products",
@@ -107,10 +141,10 @@ const getSalesByCategory = async (req:any, res:ServerResponse) => {
       $addFields: {
         percentage: { $multiply: [{$divide: ["$TotalCategorySales", "$TotalSales.total"]},100]}
       }
-    }
+    },
   ])
 
-  return res.end(JSON.stringify({secess: true, stats}))
+  return res.end(JSON.stringify({ secess: true, sales }))
 }
 
-module.exports = { fillCollection, getTrandingProducts, getSalesByCategory };
+module.exports = { fillCollection, getTotalSales, getTrandingProducts, getSalesByCategory };
