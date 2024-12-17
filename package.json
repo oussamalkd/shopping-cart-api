@@ -4,7 +4,8 @@
   "main": "app.ts",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon app.ts"
+    "start": "nodemon app.ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
