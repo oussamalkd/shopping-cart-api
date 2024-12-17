@@ -9,7 +9,11 @@ const salesController = require("./controllers/SalesController");
 
 //setup routing
 const server = http.createServer(async (req: any, res: ServerResponse) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
+  res.setHeader("Access-Control-Max-Age", 2592000); // 30 days
   res.writeHead(200, { "Content-Type": "application/json" });
+
   const url = req.url;
   const parsedUrl = urlParser.parse(url, true);
 
