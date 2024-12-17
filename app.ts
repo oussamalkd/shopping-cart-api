@@ -2,7 +2,7 @@ import { ServerResponse } from "http";
 
 require("dotenv").config();
 const http = require("http");
-const urlParser = require("url")
+const urlParser = require("url");
 
 const productController = require("./controllers/productsController");
 const salesController = require("./controllers/SalesController");
@@ -11,35 +11,37 @@ const salesController = require("./controllers/SalesController");
 const server = http.createServer(async (req: any, res: ServerResponse) => {
   res.writeHead(200, { "Content-Type": "application/json" });
   const url = req.url;
-  const parsedUrl = urlParser.parse(url, true)
+  const parsedUrl = urlParser.parse(url, true);
 
   if (parsedUrl.pathname === "/") {
     res.write("documentation route");
     res.end();
-  }
-  else if (parsedUrl.pathname === "/api/products") {
-    productController.index(req, res);
-  }
+  } else if (parsedUrl.pathname === "/api/products") {
+    const page = parsedUrl.query.page;
+    const products = await productController.index(page);
+    return res.end(JSON.stringify({ secess: true, products }));
+  } else if (parsedUrl.pathname === "/api/analytics/total_sales") {
+    const analytics = await salesController.getTotalSales(
+      parsedUrl.query.last_days
+    );
 
-  else if(parsedUrl.pathname === "/api/analytics/total_sales") {
-    const analytics = await salesController.getTotalSales(parsedUrl.query.last_days)
-    if(analytics.length === 0) {
-      return res.end(JSON.stringify({secess: true, message: "There are no sales in selected period"}))
+    if (analytics.length === 0) {
+      return res.end(
+        JSON.stringify({
+          secess: true,
+          message: "There are no sales in selected period",
+        })
+      );
     }
-    return res.end(JSON.stringify({secess: true, analytics}))
-  }
 
-  else if(parsedUrl.pathname === "/api/analytics/trending_products") {
-    salesController.getTrandingProducts(req, res)
-  }
-
-  else if(parsedUrl.pathname === "/api/analytics/category_sales") {
-    salesController.getSalesByCategory(req, res)
-    
-  }
-  else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('404 Not Found');
+    return res.end(JSON.stringify({ secess: true, analytics }));
+  } else if (parsedUrl.pathname === "/api/analytics/trending_products") {
+    salesController.getTrandingProducts(req, res);
+  } else if (parsedUrl.pathname === "/api/analytics/category_sales") {
+    salesController.getSalesByCategory(req, res);
+  } else {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("404 Not Found");
   }
 });
 
