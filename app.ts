@@ -23,7 +23,7 @@ const server = http.createServer(async (req: any, res: ServerResponse) => {
   } else if (parsedUrl.pathname === "/api/products") {
     const page = parsedUrl.query.page;
     const products = await productController.index(page);
-    return res.end(JSON.stringify({ secess: true, products }));
+    return res.end(JSON.stringify({ success: true, products }));
   } else if (parsedUrl.pathname === "/api/analytics/total_sales") {
     const analytics = await salesController.getTotalSales(
       parsedUrl.query.last_days
@@ -38,7 +38,7 @@ const server = http.createServer(async (req: any, res: ServerResponse) => {
       );
     }
 
-    return res.end(JSON.stringify({ secess: true, analytics }));
+    return res.end(JSON.stringify({ success: true, analytics }));
   } else if (parsedUrl.pathname === "/api/analytics/trending_products") {
     salesController.getTrandingProducts(req, res);
   } else if (parsedUrl.pathname === "/api/analytics/category_sales") {
